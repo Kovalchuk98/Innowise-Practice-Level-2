@@ -1,151 +1,182 @@
 <template>
   <div>
-    <h5>Coordinates {{ x }} - {{ y }}</h5>
     <div class="draw_wrapper">
-      <!-- <canvas id="myCanvas" ref="canvas"></canvas> -->
-
+      <Tools
+        ref="sett"
+        @selectTool="select"
+        @stroke="strokeValue"
+        @setColor="setColor"
+        @saveImgs="saveImgs"
+        @clear="clear"
+        @undo="undo"
+        @download="downloadImg"
+      />
       <canvas
         id="myCanvas"
         ref="myCanvas"
         @mousedown="onMouseDown($event)"
         @mousemove="onMouseMove($event)"
         @mouseup="onMouseUp($event)"
+        width="500px"
+        height="500px"
       />
-      <!-- width="800px" -->
-      <!-- height="800px" -->
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { mapActions } from "vuex";
 import Vue from "vue";
-
+import Tools from "@/components/Tools.vue";
+import Routes from "@/router/approutes";
 export default Vue.extend({
+  components: {
+    Tools
+  },
   data() {
     return {
+      tool: "brush",
+      color: "black",
+      pathArray: [],
+      idx: -1,
+      size: 3,
       x: 0,
       y: 0,
       isDrawing: false,
       rect: {} as DOMRect,
-      ctx: {} as CanvasRenderingContext2D
-      // ctx: {} as CanvasRenderingContext2D
-      // canvas: this.$refs.myCanvas as HTMLCanvasElement
+      ctx: {} as CanvasRenderingContext2D,
+      canvas: {} as HTMLCanvasElement
     };
   },
   methods: {
+    ...mapActions("posts", ["saveImg", "saveData"]),
+    downloadImg() {
+      const canvas = this.$refs.myCanvas as HTMLCanvasElement;
+      const url = canvas.toDataURL();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "unnamed";
+      document.body.appendChild(a);
+      a.click();
+    },
+    setColor(value: string) {
+      this.color = value;
+    },
+    select(value: string) {
+      this.tool = value;
+    },
+    strokeValue(value: number) {
+      this.size = value;
+    },
     onMouseDown(e: MouseEvent) {
       this.x = e.clientX - this.rect.left;
       this.y = e.clientY - this.rect.top;
       this.isDrawing = true;
-      console.log("mouse dow");
-      console.log(this.x, this.y);
-    },
-    onMouseUp(e: MouseEvent) {
-      // if (this.isDrawing === true) {
-      //   this.drawLine(
-      //     this.x,
-      //     this.y,
-      //     e.clientX - this.rect.left,
-      //     e.clientY - this.rect.top
-      //   );
-      //   this.x = 0;
-      //   this.y = 0;
-      //   this.isDrawing = false;
-      //   console.log("mouse up");
-      // }
-
-      // this.x = e.clientX; //
-      // this.y = e.clientY; //
-      this.isDrawing = false;
-      console.log("mouse up");
-    },
-    onMouseMove(e: MouseEvent) {
-      if (this.isDrawing === true) {
-        this.drawLine(
-          this.x,
-          this.y,
-          e.clientX - this.rect.left,
-          e.clientY - this.rect.top
-        );
-        this.x = e.clientX - this.rect.left;
-        this.y = e.clientY - this.rect.top;
-        console.log("mouse move");
+      if (this.tool === "brush") {
+        this.draw(e, "black");
       }
     },
-    drawLine(x1: number, x2: number, y1: number, y2: number) {
+    onMouseUp(e: MouseEvent) {
+      this.isDrawing = false;
+      const x = e.clientX - this.rect.left;
+      const y = e.clientY - this.rect.top;
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.x, this.y);
+      this.ctx.lineWidth = this.size;
+      this.ctx.lineCap = "round";
+      this.ctx.strokeStyle = this.color;
+      switch (this.tool) {
+        case "rect": {
+          this.ctx.rect(this.x, this.y, x - this.x, y - this.y);
+          this.ctx.fillStyle = this.color;
+          this.ctx.fill();
+          break;
+        }
+        case "circle": {
+          this.ctx.arc(
+            this.x,
+            this.y,
+            Math.pow(Math.pow(x - this.x, 2) + Math.pow(y - this.y, 2), 0.5),
+            0,
+            Math.PI * 2,
+            false
+          );
+          this.ctx.fillStyle = this.color;
+          this.ctx.fill();
+          break;
+        }
+        case "line": {
+          this.ctx.lineTo(x, y);
+          break;
+        }
+      }
+      this.ctx.stroke();
+      const preData = this.ctx.getImageData(
+        0,
+        0,
+        this.canvas.width,
+        this.canvas.height
+      ) as never;
+      this.pathArray.push(preData);
+      this.idx += 1;
+    },
+
+    onMouseMove(e: MouseEvent) {
+      if (this.isDrawing === true) {
+        if (this.tool === "brush") {
+          this.draw(e, this.color);
+        } else if (this.tool === "eraser") {
+          this.draw(e, "#fff");
+        }
+      }
+    },
+    draw(e: MouseEvent, color: string) {
+      const x = e.clientX - this.rect.left;
+      const y = e.clientY - this.rect.top;
+      if (this.isDrawing) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.x, this.y);
+        this.ctx.lineWidth = this.size;
+        this.ctx.lineCap = "round";
+        this.ctx.strokeStyle = color;
+        this.ctx.lineTo(x, y);
+        this.ctx.stroke();
+        this.x = x;
+        this.y = y;
+      }
+    },
+    clear(): void {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.pathArray = [];
+      this.idx = -1;
+    },
+    undo(): void {
+      if (this.idx <= 0) {
+        this.clear();
+      } else {
+        this.idx -= 1;
+        this.pathArray.pop();
+        this.ctx.putImageData(this.pathArray[this.idx], 1, 1);
+      }
+    },
+    saveImgs() {
       const canvas = this.$refs.myCanvas as HTMLCanvasElement;
-      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-      ctx.beginPath();
-      ctx.rect(x1, x2, y1, y2);
-      // ctx.lineTo(x1, x2);
-      ctx.strokeStyle = "black";
-      ctx.lineCap = "round";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // ctx.beginPath();
-      // ctx.moveTo(this.x, this.y);
-      // ctx.stroke();
-
-      // ctx.beginPath();
-      // ctx.strokeStyle = "black";
-      // ctx.lineWidth = 1;
-      // ctx.moveTo(x1, y1);
-      // ctx.lineTo(x2, y2);
-      // ctx.stroke();
-      // ctx.closePath();
-      // console.log("drawing line");
+      const url = canvas.toDataURL();
+      this.saveImg(url);
+      this.$router.push({ path: Routes.Home });
     }
   },
-  // methods: {
-  //   startPainting(e: MouseEvent) {
-  //     this.isDrawing = true;
-  //     console.log(this.isDrawing);
-  //     this.draw(e);
-  //   },
-  //   finishedPainting() {
-  //     this.isDrawing = false;
-  //     console.log(this.isDrawing);
-  //     this.ctx.beginPath();
-  //   },
-  //   draw(e: MouseEvent) {
-  //     if (!this.isDrawing) return;
-
-  //     this.ctx.lineWidth = 10;
-  //     this.ctx.lineCap = "round";
-
-  //     this.ctx.lineTo(e.clientX, e.clientY);
-  //     this.ctx.stroke();
-
-  //     this.ctx.beginPath();
-  //     this.ctx.moveTo(e.clientX, e.clientY);
-  //   }
-  // },
   mounted() {
     const canvas = this.$refs.myCanvas as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas?.getContext("2d") as CanvasRenderingContext2D;
+    this.canvas = canvas;
+    this.ctx = ctx;
 
     this.rect = canvas.getBoundingClientRect();
-    this.ctx.imageSmoothingEnabled = false; // ?
-    // this.ctx = ctx;
+    this.ctx.imageSmoothingEnabled = false;
 
-    canvas.height = this.rect.height; //!
-    canvas.width = this.rect.width; //!
-
-    // canvas.height = window.innerHeight;
-    // canvas.width = window.innerWidth;
-    // this.rect = canvas.getBoundingClientRect();
-    // console.log("this is rect", this.rect, ctx);
-
-    // const canvas = this.$refs.canvas as HTMLCanvasElement;
-    // const ctx = <CanvasRenderingContext2D> canvas.getContext("2d");
-    // console.log(ctx);
-    // this.ctx = ctx;
-    // this.ctx.imageSmoothingEnabled = false;
-    // this.ctx = this.$refs.canvas.getContext("2d");
-    // this.ctx.lineWidth = 5;
-    // this.ctx.lineCap = "round";
-    // this.ctx.strokeStyle = this.color;
+    this.ctx.fillStyle = "#FFFFFF";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 });
 </script>
@@ -153,12 +184,13 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .draw_wrapper {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   #myCanvas {
-    width: 70%;
-    height: 50%;
     border: 0.5px solid gray;
-    // box-shadow: 20px 20px 20px 20px solid #000;
+    &:active {
+      cursor: crosshair;
+    }
   }
 }
 </style>

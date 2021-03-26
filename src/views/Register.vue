@@ -35,7 +35,7 @@
 
 <script>
 import { mapActions } from "vuex";
-// import AppRoutes from "@/router/approutes";
+import Routes from "@/router/approutes";
 
 export default {
   data() {
@@ -55,9 +55,9 @@ export default {
         this.signup({
           email: this.form.email,
           password: this.form.password,
-          displayName: this.form.name
+          displayName: this.form.displayName
         }).then(() => {
-          this.$router.push({ path: "/" });
+          this.$router.push({ path: Routes.Home });
         });
       } else {
         this.$toast.warning("Please make sure your passwords match");
@@ -67,9 +67,10 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wrapper {
   background-color: #fff !important;
+  width: 100%;
   .login_form {
     display: flex;
     flex-direction: column;
@@ -98,15 +99,19 @@ export default {
         cursor: pointer;
         width: 100%;
         padding: 12px 0;
-        background-color: #ff4500;
+        background-color: #ffa825;
         color: #fff;
         transition: 0.4s ease;
         border: none;
         border-radius: 10px;
         &:hover,
         :active {
-          background-color: #fd7341;
+          background-color: #fcbf65;
         }
+      }
+      .btn_title {
+        width: 100%;
+        text-align: center;
       }
     }
   }
@@ -115,9 +120,22 @@ export default {
 @media (min-width: 768px) {
   .wrapper {
     .login_form {
+      width: 70%;
       .input_wrapper,
       .buttons_wrapper {
         width: 70%;
+      }
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .wrapper {
+    .login_form {
+      width: 60%;
+      .input_wrapper,
+      .buttons_wrapper {
+        width: 60%;
       }
     }
   }

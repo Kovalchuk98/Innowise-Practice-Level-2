@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <mobileMenu v-if="isShow" @hide="isShow = !isShow" :user="user" />
-    <div>
+    <div class="wrapper_btn">
       <button class="menu_btn" @click="isShow = !isShow">
         <img
           src="../../assets/burger.svg"
@@ -11,8 +11,20 @@
         />
       </button>
       <router-link to="/" class="header_title">Mini Paint</router-link>
+      <button
+        v-if="$route.path !== '/picture/create' && user.uid"
+        class="create_btn"
+        @click="$router.push({ path: '/picture/create' })"
+      >
+        <img
+          src="../../assets/palette.svg"
+          alt=""
+          width="25px"
+          height="auto"
+        /><span>Create</span>
+      </button>
     </div>
-    <div class="wrapper_block" v-if="user">
+    <div class="wrapper_block" v-if="user.uid">
       <div class="user_wrapper">
         <img
           class="user_img"
@@ -31,7 +43,7 @@
 <script>
 import mobileMenu from "@/components/UI/Menu.vue";
 import { mapActions } from "vuex";
-// import AppRoutes from "@/router/approutes";
+import Routes from "@/router/approutes";
 
 export default {
   props: {
@@ -49,14 +61,10 @@ export default {
     };
   },
   methods: {
-    // ...mapMutations("tasks", ["setActiveDays", "setDoneDays", "setTasks"]),
     ...mapActions("user", ["logout"]),
     signout() {
       this.logout().then(() => {
-        // this.setActiveDays([]);
-        // this.setDoneDays([]);
-        // this.setTasks(null);
-        this.$router.push({ path: "/signin" });
+        this.$router.push({ path: Routes.Signin });
       });
     }
   }
@@ -68,9 +76,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  // background-color: rgb(255, 255, 255);
-  background-color: rgb(255, 168, 37);
-  // margin: 0.5rem 2rem;
+  background-color: #ffa825;
+  height: 2.4rem;
+  padding: 0 2.4rem;
   .menuWrapper {
     position: fixed;
     background-color: rgb(87, 85, 85);
@@ -80,19 +88,41 @@ export default {
     left: 0;
     z-index: 1;
   }
-  .menu_btn {
-    padding: 5px;
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
+  .wrapper_btn {
+    display: flex;
+    align-items: center;
+    .menu_btn {
+      padding: 5px;
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+    }
+    .header_title {
+      text-decoration: none;
+      color: #363636;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-left: 1rem;
+    }
+    .create_btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      margin-left: 1rem;
+      border: 1px solid black;
+      border-radius: 1.6rem;
+      font-size: 14px;
+      margin-left: 1rem;
+      transition: 0.2s linear;
+      &:hover,
+      :active {
+        background-color: #d3d1ce;
+      }
+    }
   }
-  .header_title {
-    text-decoration: none;
-    color: #363636;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-left: 1rem;
-  }
+
   .user_wrapper {
     display: flex;
     align-items: center;

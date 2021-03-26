@@ -2,7 +2,7 @@
   <transition name="fade">
     <div class="menuWrapper">
       <button @click="$emit('hide')" class="menuWrapper__close">X</button>
-      <div v-if="user" class="user_wrapper">
+      <div v-if="user.uid" class="user_wrapper">
         <img
           class="user_img"
           :src="user.photoURL || require('../../assets/noimg.png')"
@@ -12,7 +12,7 @@
         />
         <span class="user_name">{{ user.displayName || user.email }}</span>
       </div>
-      <div class="btn_wrapper" v-if="!user">
+      <div class="btn_wrapper" v-if="!user.uid">
         <button @click="signin">
           Sign In
         </button>
@@ -29,7 +29,7 @@
 
 <script>
 import { mapActions } from "vuex";
-// import AppRoutes from "@/router/approutes";
+import Routes from "@/router/approutes";
 
 export default {
   props: {
@@ -38,19 +38,18 @@ export default {
     }
   },
   methods: {
-    // ...mapMutations("tasks", ["setActiveDays", "setDoneDays", "setTasks"]),
     ...mapActions("user", ["logout"]),
     signin() {
-      this.$router.push({ path: "/signin" });
+      this.$router.push({ path: Routes.Signin });
       this.$emit("hide");
     },
     signup() {
-      this.$router.push({ path: "/register" });
+      this.$router.push({ path: Routes.Register });
       this.$emit("hide");
     },
     signout() {
       this.logout().then(() => {
-        this.$router.push({ path: "/signin" });
+        this.$router.push({ path: Routes.Signin });
         this.$emit("hide");
       });
     }
@@ -63,13 +62,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  // position: fixed;
-  background-color: #d8421d !important;
-  // width: 60%;
-  // height: 100vh;
-  // top: 0;
-  // left: -100%;
-  // z-index: 9999;
+  background-color: #f39201 !important;
   .user_wrapper {
     display: flex;
     flex-direction: column;
@@ -92,15 +85,6 @@ export default {
     margin-top: 10px;
     width: 100%;
   }
-  .button_out {
-    display: block;
-    cursor: pointer;
-    padding: 12px 0;
-    color: #fff;
-    border-radius: 10px;
-    border: 1px solid #ee9a85;
-    background-color: transparent;
-  }
   .btn_wrapper {
     display: flex;
     flex-direction: column;
@@ -112,7 +96,7 @@ export default {
       padding: 12px 0;
       color: #fff;
       border-radius: 10px;
-      border: 1px solid #ee9a85;
+      border: 1px solid #ffffff;
       background-color: transparent;
       &:last-of-type {
         margin-top: 5px;
@@ -127,7 +111,7 @@ export default {
     border-radius: 20px;
     color: #fff;
     background-color: transparent;
-    border: 1px solid #ee9a85;
+    border: 2px solid #ffffff;
     margin: 5px;
   }
 }
