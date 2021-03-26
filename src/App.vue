@@ -1,32 +1,60 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <Header :user="user" />
     <router-view />
   </div>
 </template>
 
+<script lang="ts">
+import Vue from "vue";
+import Header from "@/components/UI/Header.vue";
+import { mapGetters } from "vuex";
+export default Vue.extend({
+  components: {
+    Header
+  },
+  computed: {
+    ...mapGetters("user", ["getUser"]),
+    user: {
+      get(): object {
+        return this.getUser;
+      }
+    }
+  }
+});
+</script>
+
 <style lang="scss">
+body {
+  padding: 0;
+  margin: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+.fade-enter {
+  transition: 0.3s ease;
+  transform: translateY(-100%);
+}
+.fade-enter-to {
+  transition: 0.3s ease;
+  transform: translateX(0%);
+}
+.fade-leave {
+  transition: 0.3s ease;
+  transform: translateX(0%);
+}
+.fade-leave-to {
+  transition: 0.3s ease;
+  transform: translateX(-100%);
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: 0.6s ease;
 }
 </style>
