@@ -1,8 +1,8 @@
 import Vue from "vue";
-import Vuex, { Store, StoreOptions } from "vuex";
-import { user } from "@/store/modules/user/index";
-import { RootState } from "@/types/index";
-import { posts } from "@/store/modules/posts/index";
+import Vuex, { StoreOptions } from "vuex";
+import { user } from "@/store/modules/user";
+import { RootState } from "@/types";
+import { posts } from "@/store/modules/posts";
 
 Vue.use(Vuex);
 

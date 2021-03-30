@@ -1,5 +1,3 @@
-import Vue from "*.vue";
-
 export interface RootState {
   version: string;
 }
@@ -10,12 +8,6 @@ export interface UserState {
     displayName?: string;
     photoURL?: string;
   };
-}
-
-export interface Settings extends Vue {
-  Size: number;
-  Color: string;
-  Tool: string;
 }
 
 export interface Post {
