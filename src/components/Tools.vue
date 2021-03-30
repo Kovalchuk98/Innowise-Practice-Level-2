@@ -5,11 +5,11 @@
       <input
         id="size"
         type="number"
-        @change="$emit('stroke', Size)"
+        @change="$emit('stroke', size)"
         min="1"
         max="200"
-        :autocomplete="Size"
-        v-model="Size"
+        :autocomplete="size"
+        v-model="size"
       />
     </div>
 
@@ -20,13 +20,13 @@
         id="color"
         type="color"
         @change="setColor"
-        v-model="Color"
+        v-model="color"
       />
-      <span>{{ this.Color }}</span>
+      <span>{{ color }}</span>
     </div>
     <div class="btn_wrapper">
       <button
-        :class="{ active: Tool === `${button.name}` }"
+        :class="{ active: tool === `${button.name}` }"
         v-for="(button, index) in buttons"
         :key="index"
         class="tool_btn"
@@ -36,10 +36,10 @@
         <span>{{ button.placeholder }}</span>
       </button>
     </div>
-    <p>Tool: {{ Tool }}</p>
+    <p>Tool: {{ tool }}</p>
     <div class="main_buttons">
       <button
-        :class="{ active: Tool === `${button.name}` }"
+        :class="{ active: tool === `${button.name}` }"
         v-for="(button, index) in mainButtons"
         :key="index"
         class="main_btn"
@@ -58,9 +58,9 @@ import Vue from "vue";
 export default Vue.extend({
   data() {
     return {
-      Size: 3,
-      Color: "#000000",
-      Tool: "brush",
+      size: 3,
+      color: "#000000",
+      tool: "brush",
       buttons: [
         {
           name: "brush",
@@ -118,11 +118,11 @@ export default Vue.extend({
   },
   methods: {
     select(value: string): void {
-      this.Tool = value;
-      this.$emit("selectTool", this.Tool);
+      this.tool = value;
+      this.$emit("selectTool", this.tool);
     },
-    setColor() {
-      this.$emit("setColor", this.Color);
+    setColor(): void {
+      this.$emit("setColor", this.color);
     }
   }
 });

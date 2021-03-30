@@ -16,7 +16,7 @@
       </div>
       <div class="input_wrapper">
         <label for="confpass">Confirm Password</label>
-        <input type="password" id="confpass" v-model="form.confpass" />
+        <input type="password" id="confpass" v-model="form.confPass" />
       </div>
       <div class="buttons_wrapper">
         <button type="submit" class="signup_btn" @click="register">
@@ -26,45 +26,46 @@
       <div>
         <p>
           Already have an account?
-          <router-link to="/signin">Sign In</router-link>
+          <router-link :to="{ name: 'signin' }">Sign In</router-link>
         </p>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { mapActions } from "vuex";
 import Routes from "@/router/approutes";
 
-export default {
+export default Vue.extend({
   data() {
     return {
       form: {
         email: "",
         password: "",
         displayName: "",
-        confpass: ""
+        confPass: ""
       }
     };
   },
   methods: {
-    ...mapActions("user", ["signup"]),
-    register() {
-      if (this.form.password === this.form.confpass) {
-        this.signup({
+    ...mapActions("user", ["signUp"]),
+    register(): void {
+      if (this.form.password === this.form.confPass) {
+        this.signUp({
           email: this.form.email,
           password: this.form.password,
           displayName: this.form.displayName
         }).then(() => {
-          this.$router.push({ path: Routes.Home });
+          this.$router.push(Routes.Home);
         });
       } else {
         this.$toast.warning("Please make sure your passwords match");
       }
     }
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>

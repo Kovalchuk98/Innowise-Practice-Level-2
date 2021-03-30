@@ -8,11 +8,9 @@
 import Gallery from "@/components/Gallery.vue";
 import { mapActions, mapGetters } from "vuex";
 import Vue from "vue";
+import { PostState } from "@/types";
 export default Vue.extend({
   components: { Gallery },
-  data() {
-    return {};
-  },
   name: "Home",
   computed: {
     ...mapGetters("posts", ["getPosts"]),
@@ -22,7 +20,7 @@ export default Vue.extend({
       }
     },
     posts: {
-      get(): Array<object> {
+      get(): PostState {
         return this.getPosts;
       }
     }

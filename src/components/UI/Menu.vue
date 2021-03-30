@@ -13,13 +13,13 @@
         <span class="user_name">{{ user.displayName || user.email }}</span>
       </div>
       <div class="btn_wrapper" v-if="!user.uid">
-        <button @click="signin">
+        <button @click="routeEvent('signin')">
           Sign In
         </button>
-        <button @click="signup">Sign Up</button>
+        <button @click="routeEvent('register')">Sign Up</button>
       </div>
       <div v-else class="btn_wrapper">
-        <button @click="signout" class="button_out">
+        <button @click="signOut" class="button_out">
           Sign Out
         </button>
       </div>
@@ -27,34 +27,29 @@
   </transition>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { mapActions } from "vuex";
-import Routes from "@/router/approutes";
 
-export default {
+export default Vue.extend({
   props: {
     user: {
       type: Object
     }
   },
   methods: {
-    ...mapActions("user", ["logout"]),
-    signin() {
-      this.$router.push({ path: Routes.Signin });
-      this.$emit("hide");
-    },
-    signup() {
-      this.$router.push({ path: Routes.Register });
-      this.$emit("hide");
-    },
-    signout() {
-      this.logout().then(() => {
-        this.$router.push({ path: Routes.Signin });
-        this.$emit("hide");
+    ...mapActions("user", ["logOut"]),
+    signOut(): void {
+      this.logOut().then(() => {
+        this.routeEvent("signin");
       });
+    },
+    routeEvent(value: string): void {
+      this.$router.push({ name: value });
+      this.$emit("hide");
     }
   }
-};
+});
 </script>
 
 <style lang="scss">

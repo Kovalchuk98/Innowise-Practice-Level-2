@@ -2,12 +2,12 @@
   <div class="item_wrapper">
     <img :src="post.imgUrl" alt="" width="auto" />
     <div class="bottom_wrapper">
-      <span
-        >Created by
-        <span class="name_label" @click="$emit('search', post.author)">{{
-          post.author
-        }}</span></span
-      >
+      <span>
+        Created by
+        <span class="name_label" @click="$emit('search', post.author)">
+          {{ post.author }}
+        </span>
+      </span>
       <span>{{ post.date }}</span>
     </div>
   </div>

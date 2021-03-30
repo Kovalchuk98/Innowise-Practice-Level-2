@@ -9,6 +9,7 @@
 import Vue from "vue";
 import Header from "@/components/UI/Header.vue";
 import { mapGetters } from "vuex";
+import { UserState } from "./types";
 export default Vue.extend({
   components: {
     Header
@@ -16,7 +17,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters("user", ["getUser"]),
     user: {
-      get(): object {
+      get(): UserState {
         return this.getUser;
       }
     }
