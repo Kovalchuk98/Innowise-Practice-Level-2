@@ -1,7 +1,6 @@
-import { ActionContext, Module, Store } from "vuex";
-import { Post, RootState } from "@/types/index";
-import { PostState } from "@/types/index";
-import { fireAuth, GoogleProvider, fireStorage, fireDb } from "@/firebase";
+import { Module } from "vuex";
+import { Post, RootState, PostState } from "@/types";
+import { fireAuth, fireStorage, fireDb } from "@/firebase";
 import Vue from "vue";
 
 export const posts: Module<PostState, RootState> = {
@@ -15,7 +14,7 @@ export const posts: Module<PostState, RootState> = {
     }
   },
   actions: {
-    async saveImg({ dispatch }, url): Promise<void> {
+    async saveImg({ dispatch }, url: string): Promise<void> {
       try {
         const imgKey = fireDb
           .ref()
@@ -78,13 +77,7 @@ export const posts: Module<PostState, RootState> = {
             });
           });
           data.sort((a: any, b: any) => {
-            if (a.tsp > b.tsp) {
-              return -1;
-            }
-            if (a.tsp < b.tsp) {
-              return 1;
-            }
-            return 0;
+            return b.tsp - a.tsp;
           });
           commit("setPosts", data);
         });

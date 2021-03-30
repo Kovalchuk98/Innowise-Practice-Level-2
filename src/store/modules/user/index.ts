@@ -1,7 +1,6 @@
-import { ActionContext, Module, Store } from "vuex";
-import { RootState } from "@/types/index";
-import { UserState } from "@/types/index";
-import { fireAuth, GoogleProvider, fireStorage, fireDb } from "@/firebase";
+import { Module } from "vuex";
+import { RootState, UserState } from "@/types";
+import { fireAuth, GoogleProvider } from "@/firebase";
 import Vue from "vue";
 
 export const user: Module<UserState, RootState> = {
@@ -15,7 +14,7 @@ export const user: Module<UserState, RootState> = {
     }
   },
   actions: {
-    async signup(
+    async signUp(
       context,
       {
         email,
@@ -33,7 +32,7 @@ export const user: Module<UserState, RootState> = {
         Vue.$toast.warning(e.message);
       }
     },
-    async login(
+    async logIn(
       context,
       { email, password }: { email: string; password: string }
     ): Promise<void> {
@@ -50,7 +49,7 @@ export const user: Module<UserState, RootState> = {
         Vue.$toast.warning(e.message);
       }
     },
-    async logout({ commit }): Promise<void> {
+    async logOut({ commit }): Promise<void> {
       await fireAuth.signOut();
       commit("setUser", {});
     }

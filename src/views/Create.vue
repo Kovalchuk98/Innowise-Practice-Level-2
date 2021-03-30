@@ -50,7 +50,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions("posts", ["saveImg", "saveData"]),
-    downloadImg() {
+    downloadImg(): void {
       const canvas = this.$refs.myCanvas as HTMLCanvasElement;
       const url = canvas.toDataURL();
       const a = document.createElement("a");
@@ -59,16 +59,16 @@ export default Vue.extend({
       document.body.appendChild(a);
       a.click();
     },
-    setColor(value: string) {
+    setColor(value: string): void {
       this.color = value;
     },
-    select(value: string) {
+    select(value: string): void {
       this.tool = value;
     },
-    strokeValue(value: number) {
+    strokeValue(value: number): void {
       this.size = value;
     },
-    onMouseDown(e: MouseEvent) {
+    onMouseDown(e: MouseEvent): void {
       this.x = e.clientX - this.rect.left;
       this.y = e.clientY - this.rect.top;
       this.isDrawing = true;
@@ -76,7 +76,7 @@ export default Vue.extend({
         this.draw(e, "black");
       }
     },
-    onMouseUp(e: MouseEvent) {
+    onMouseUp(e: MouseEvent): void {
       this.isDrawing = false;
       const x = e.clientX - this.rect.left;
       const y = e.clientY - this.rect.top;
@@ -121,8 +121,8 @@ export default Vue.extend({
       this.idx += 1;
     },
 
-    onMouseMove(e: MouseEvent) {
-      if (this.isDrawing === true) {
+    onMouseMove(e: MouseEvent): void {
+      if (this.isDrawing) {
         if (this.tool === "brush") {
           this.draw(e, this.color);
         } else if (this.tool === "eraser") {
@@ -130,7 +130,7 @@ export default Vue.extend({
         }
       }
     },
-    draw(e: MouseEvent, color: string) {
+    draw(e: MouseEvent, color: string): void {
       const x = e.clientX - this.rect.left;
       const y = e.clientY - this.rect.top;
       if (this.isDrawing) {
@@ -159,7 +159,7 @@ export default Vue.extend({
         this.ctx.putImageData(this.pathArray[this.idx], 1, 1);
       }
     },
-    saveImgs() {
+    saveImgs(): void {
       const canvas = this.$refs.myCanvas as HTMLCanvasElement;
       const url = canvas.toDataURL();
       this.saveImg(url);

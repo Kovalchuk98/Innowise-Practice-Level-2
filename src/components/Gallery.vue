@@ -25,7 +25,7 @@
     >
       Load more
     </button>
-    <h3 v-if="!isEmpty && searchArray.length == 0">No results found</h3>
+    <h3 v-if="!isEmpty && searchArray.length === 0">No results found</h3>
   </div>
 </template>
 
@@ -33,7 +33,7 @@
 import Vue from "vue";
 import GalleryItem from "@/components/GalleryItem.vue";
 import { mapGetters } from "vuex";
-import { Post } from "@/types";
+import { Post, PostState } from "@/types";
 
 export default Vue.extend({
   components: { GalleryItem },
@@ -53,7 +53,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters("posts", ["getPosts"]),
     articles: {
-      get(): Array<object> {
+      get(): PostState {
         const articleList = this.getPosts;
         return articleList.slice(0, this.totalSize);
       }
@@ -61,14 +61,14 @@ export default Vue.extend({
   },
 
   methods: {
-    loadMore() {
+    loadMore(): void {
       this.totalSize *= 2;
     },
-    clear() {
+    clear(): void {
       this.search = "";
       this.findAuthor();
     },
-    searchByAuthor(value: string) {
+    searchByAuthor(value: string): void {
       this.search = value;
       this.findAuthor();
     },

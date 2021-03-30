@@ -10,18 +10,16 @@
           height="auto"
         />
       </button>
-      <router-link to="/" class="header_title">Mini Paint</router-link>
+      <router-link :to="{ name: 'Home' }" class="header_title">
+        Mini Paint
+      </router-link>
       <button
-        v-if="$route.path !== '/picture/create' && user.uid"
+        v-if="$route.path !== createRoute && user.uid"
         class="create_btn"
-        @click="$router.push({ path: '/picture/create' })"
+        @click="$router.push({ name: 'create' })"
       >
-        <img
-          src="../../assets/palette.svg"
-          alt=""
-          width="25px"
-          height="auto"
-        /><span>Create</span>
+        <img src="../../assets/palette.svg" alt="" width="25px" height="auto" />
+        <span>Create</span>
       </button>
     </div>
     <div class="wrapper_block" v-if="user.uid">
@@ -35,21 +33,22 @@
         />
         <span class="user_name">{{ user.displayName || user.email }}</span>
       </div>
-      <button @click="signout" class="signout_btn">Sign Out</button>
+      <button @click="signOut" class="signout_btn">Sign Out</button>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import mobileMenu from "@/components/UI/Menu.vue";
 import { mapActions } from "vuex";
 import Routes from "@/router/approutes";
 
-export default {
+export default Vue.extend({
   props: {
     user: {
       type: Object,
-      require: true
+      required: true
     }
   },
   components: {
@@ -60,15 +59,22 @@ export default {
       isShow: false
     };
   },
+  computed: {
+    createRoute: {
+      get(): string {
+        return Routes.Create;
+      }
+    }
+  },
   methods: {
-    ...mapActions("user", ["logout"]),
-    signout() {
-      this.logout().then(() => {
-        this.$router.push({ path: Routes.Signin });
+    ...mapActions("user", ["logOut"]),
+    signOut(): void {
+      this.logOut().then(() => {
+        this.$router.push(Routes.Signin);
       });
     }
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>

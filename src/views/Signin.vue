@@ -4,11 +4,11 @@
       <div class="input_wrapper">
         <h1>Sign In</h1>
         <label for="email">Email</label>
-        <input type="email" id="email" v-model="form.email" />
+        <input type="email" id="email" v-model="email" />
       </div>
       <div class="input_wrapper">
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="form.password" />
+        <input type="password" id="password" v-model="password" />
       </div>
       <div class="buttons_wrapper">
         <button type="submit" class="signin_btn" @click="signin">
@@ -27,45 +27,44 @@
       <div>
         <p>
           Don't have an account?
-          <router-link to="/register">Sign Up</router-link>
+          <router-link :to="{ name: 'register' }">Sign Up</router-link>
         </p>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { mapActions } from "vuex";
 import Routes from "@/router/approutes";
 
-export default {
+export default Vue.extend({
   data() {
     return {
-      form: {
-        email: "",
-        password: ""
-      }
+      email: "",
+      password: ""
     };
   },
   methods: {
-    ...mapActions("user", ["login", "signInWithGoogle"]),
-    signin() {
-      this.login({
-        email: this.form.email,
-        password: this.form.password
+    ...mapActions("user", ["logIn", "signInWithGoogle"]),
+    signin(): void {
+      this.logIn({
+        email: this.email,
+        password: this.password
       }).then(() => {
-        this.form.email = "";
-        this.form.password = "";
-        this.$router.push({ path: Routes.Home });
+        this.email = "";
+        this.password = "";
+        this.$router.push(Routes.Home);
       });
     },
-    signInGoogle() {
+    signInGoogle(): void {
       this.signInWithGoogle().then(() => {
-        this.$router.push({ path: Routes.Home });
+        this.$router.push(Routes.Home);
       });
     }
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>
